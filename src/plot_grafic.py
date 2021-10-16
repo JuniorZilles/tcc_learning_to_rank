@@ -3,11 +3,47 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 from matplotlib.font_manager import FontProperties
+#from matplotlib import colors
+
+
+def build_scatter():
+
+    df = pd.read_excel('data/algoritmos_ano_freq.xlsx', header=1)
+    df.columns = ["Algoritmo/Modelo", "2005", "2006", "2007", "2008", "2009", "2010",
+                  "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2019", "2020", "2021"]
+    newdf = df.sort_values("Algoritmo/Modelo", ascending=False)
+    x = []
+    y = []
+    z = []
+    for index, row in newdf.iterrows():
+        algo = '',
+        for ano, qtd in row.iteritems():
+            if ano == 'Algoritmo/Modelo':
+                algo = qtd
+            elif qtd >= 1.0:
+                y.append(algo)
+                x.append(int(ano))
+                z.append(int(qtd))
+                
+    cmap = plt.cm.viridis
+    
+    plt.scatter(x, y, c=z, cmap=cmap,  s=100)
+    plt.colorbar(ticks=np.linspace(1, 5, 5), label='Quantidade')
+    plt.xlabel('Ano')
+    plt.ylabel('Algoritmo/Modelo')
+    x.append(2018)
+    plt.xticks(x)
+    plt.title("Quantidade X Algoritmos/Modelos X Ano")
+    plt.grid(True)
+    plt.savefig('alg_ano_arti_x.png', dpi=1920, orientation='portrait')
+    plt.show()
+
 
 def read():
     df = pd.read_excel('data/algoritmos_ano_freq.xlsx', header=1)
-    df.columns = ["Algoritmo/Modelo","2005","2006","2007","2008","2009","2010","2011","2012","2013","2014","2015","2016","2017","2019","2020","2021"]
-    
+    df.columns = ["Algoritmo/Modelo", "2005", "2006", "2007", "2008", "2009", "2010",
+                  "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2019", "2020", "2021"]
+
     items_g1 = []
     items_g2 = []
     items_g3 = {}
@@ -19,11 +55,11 @@ def read():
         qtds = []
         soma = 0
         for ano, qtd in row.iteritems():
-            if ano  == 'Algoritmo/Modelo':
+            if ano == 'Algoritmo/Modelo':
                 algo = qtd
             elif qtd >= 1.0:
                 items_g1.append([algo, ano, colors[start]])
-                items_g2.append([algo, ano, int(qtd)]) 
+                items_g2.append([algo, ano, int(qtd)])
                 qtds.append(int(qtd))
                 soma += qtd
             else:
@@ -31,12 +67,11 @@ def read():
 
         items_g3[algo] = qtds
         items_g4.append([algo, int(soma)])
-        start+=1     
-    
+        start += 1
+
     items_g1.sort(key=lambda x: x[1])
     items_g2.sort(key=lambda x: x[1])
-    items_g4.sort(reverse=True,key=lambda x: x[1]) 
-    
+    items_g4.sort(reverse=True, key=lambda x: x[1])
 
     # for y in items_g1:
     #     plt.scatter(y[1], y[0], color=y[2])
@@ -47,15 +82,18 @@ def read():
     # plt.savefig('alg_ano.png', dpi=1920, orientation='portrait')
     # plt.show()
 
-    dfg = pd.DataFrame(items_g2, columns=['Algoritmo/Modelo', 'Ano', 'Quantidade'])
-    ax2 = dfg.plot.scatter(x='Ano',
-                      y='Algoritmo/Modelo',
-                      c='Quantidade',
-                      colormap='viridis')
-    plt.title("Quantidade X Algoritmos/Modelos X Ano")
-    plt.grid(True)
-    plt.savefig('alg_ano_arti.png', dpi=1920, orientation='portrait')
-    plt.show()
+    # dfg = pd.DataFrame(items_g2, columns=[
+    #                    'Algoritmo/Modelo', 'Ano', 'Quantidade'])
+    # ax2 = dfg.plot.scatter(x='Ano',
+    #                        y='Algoritmo/Modelo',
+    #                        c='Quantidade',
+    #                        s=80,
+    #                        colormap='viridis', ticks=np.linspace(1, 5, 5))
+    # plt.title("Quantidade X Algoritmos/Modelos X Ano")
+    # #plt.colorbar(ticks=np.linspace(1, 5, 5))
+    # plt.grid(True)
+    # plt.savefig('alg_ano_arti.png', dpi=1920, orientation='portrait')
+    # plt.show()
 
     fontP = FontProperties()
     fontP.set_size('x-small')
@@ -70,15 +108,13 @@ def read():
     # plt.savefig('alg_ano_arti_line.png', dpi=1920, orientation='portrait')
     # plt.show()
 
-   
-
     i= 0
     for y in items_g4:
         plt.bar(y[0], y[1], label=y[0],color=colors[i])
         plt.xticks(y[0], " ")
         i+=1
     plt.ylabel("Quantidade")
-    plt.title("Quantidade de trabalhos X Algoritmos/Modelos")  
+    plt.title("Quantidade de trabalhos X Algoritmos/Modelos")
     plt.grid(True, axis='y')
     plt.legend(title='Algoritmos/Modelos',  loc='upper right', ncol=3, prop=fontP)
     plt.savefig('alg_arti.png', dpi=1920, orientation='portrait')
@@ -87,8 +123,7 @@ def read():
 
 
 def main():
-    
-    read()
+    build_scatter()
 
 
 main()

@@ -145,3 +145,5 @@ model.txt
 *.group
 *.train
 *.xlsx
+*.model
+out*.txt

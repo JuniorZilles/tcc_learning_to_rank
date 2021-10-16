@@ -1,31 +1,33 @@
-from os import read
-from numpy.lib.shape_base import split
+
 import pandas as pd
+def convert(input_filename, out_data_filename)->list:
+	input = open(input_filename,"r")
+	output_feature = open(out_data_filename,"w")
+	cur_cnt = 0
+	cur_doc_cnt = 0
+	last_qid = -1
+	querygroup = []
+	while True:
+		line = input.readline()
+		if not line:
+			break
+		tokens = line.split(' ')
+		tokens[-1] = tokens[-1].strip()
+		label = tokens[0]
+		qid = int(tokens[1].split(':')[1])
+		if qid != last_qid:
+			if cur_doc_cnt > 0:
+				querygroup.append(str(cur_doc_cnt))
+				cur_cnt += 1
+			cur_doc_cnt = 0
+			last_qid = qid
+		cur_doc_cnt += 1
+		output_feature.write(label+' ')
+		output_feature.write(' '.join(tokens[2:]) + '\n')
+	querygroup.append(str(cur_doc_cnt))
+	
+	input.close()
+	return querygroup
 
-def convert(path) -> pd.DataFrame:
-    lines = read_file(path)
-    reg = {'relevance':[], 'qid':[]}#,'docId':[]}
-    for l in lines:
-        index = l.find('#docid')
-        #reg['docId'].append(int(l[index:].split(' ')[-1].replace('\n', '')))
-        row = l[:index].split(' ')
-        for r in row:
-            if ':' in r:
-                item = r.split(':')
-                if 'f'+item[0] not in reg and item[0] != 'qid':
-                    reg['f'+item[0]] = [float(item[1])]
-                else:
-                    if item[0] == 'qid':
-                        reg[item[0]].append(int(item[1]))
-                    else:
-                        reg['f'+item[0]].append(float(item[1]))                    
-            elif '' != r:
-                reg['relevance'].append(int(r))
-    return pd.DataFrame(reg)
-    
-
-def read_file(path) -> list:
-    content = []
-    with open(path, 'r') as r:
-        content = r.readlines()
-    return content
+def get_group_id(path):
+	pd.Dataframe
