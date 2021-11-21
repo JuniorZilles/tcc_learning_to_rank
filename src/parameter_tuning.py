@@ -14,5 +14,8 @@ for data in [ 'MSLR10K', 'MSLR30K', 'OHSUMED', 'TD2003', 'TD2004']:
                 )
                 # Print the best model
                 with open(f'{task}.{boost}.{data}.flaml.log', 'a') as f:
+                    f.write('Best ML leaner:', automl.best_estimator)
+                    f.write('Best hyperparmeter config:', automl.best_config)
+                    f.write('Best accuracy on validation data: {0:.4g}'.format(1-automl.best_loss))
                     f.write(str(automl.model.estimator))
 
