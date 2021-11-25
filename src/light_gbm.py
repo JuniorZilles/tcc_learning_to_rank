@@ -1,111 +1,64 @@
 from pathlib import Path
-from convert import convert
+from convert import read_group
 import matplotlib.pyplot as plt
 
 import lightgbm as lgb
 from contextlib import redirect_stdout
+from params import paramsLIGHTGBM
 
 def evaluate():
-    print('Loading data...')
-    path = Path(__file__).absolute().parents[1] / 'data/Fold1' #ndcg@10 -> 0.52..
-    pathtrain = Path(__file__).absolute().parents[1] / 'data/train'
-    train = str(pathtrain/"mslr.train")
-    test = str(pathtrain/"mslr.test")
-    vali = str(pathtrain/"mslr.vali")
-    group_train = convert(str(path/'train.txt'),train)
-    group_test = convert(str(path/'test.txt'),test)
-    group_vali = convert(str(path/'test.txt'),vali)
+    for data in ['MSLR10K', 'MSLR30K', 'OHSUMED', 'TD2003', 'TD2004']:
+        pathtrain = Path(__file__).absolute().parents[1] / 'data' / data
+        train = str(pathtrain/f"{data}.train")
+        test = str(pathtrain/f"{data}.test")
+        vali = str(pathtrain/f"{data}.vali")
+        train_group = read_group(str(pathtrain/f"{data}.train.group"))
+        test_group = read_group(str(pathtrain/f"{data}.test.group"))
+        vali_group = read_group(str(pathtrain/f"{data}.vali.group"))
 
-    #df_train = convert(str(path/'train.txt'))
-    #df_valid = convert(str(regression_example_dir/'vali.txt'))
-    #df_test = convert(str(path/'test.txt'))
-
+        lgb_train = lgb.Dataset(train, group=train_group)
+        lgb_test = lgb.Dataset(test, reference=lgb_train, group=test_group)
+        lgb_vali = lgb.Dataset(vali, reference=lgb_train, group=vali_group, free_raw_data = False)
 
 
-    # qids_train = df_train.groupby("qid")["qid"].count().to_numpy()
-    # qids_test = df_test.groupby("qid")["qid"].count().to_numpy()
-    # y_train = df_train['relevance']
-    # y_test = df_test['relevance']
-    # X_train = df_train.drop(['relevance', "qid"] , axis=1)
-    # X_test = df_test.drop(['relevance', "qid"], axis=1)
+        # specify your configurations as a dict
+        print('Starting training...')
 
+        # train
+        for objective in ['lambdarank', 'rank_xendcg']:
+            eval_result = {}
+            with open(f'train.lgbm.{objective}.{data}.log', 'w') as f:
+                paramsLIGHTGBM['objective'] = objective
+                with redirect_stdout(f):
+                    gbm = lgb.train(paramsLIGHTGBM[data],
+                                lgb_train,
+                                valid_sets=[lgb_test],
+                                valid_names=['eval'], 
+                                evals_result=eval_result,
+                                )
 
-    print("create dataset for lightgbm")
-    
-    lgb_train = lgb.Dataset(train, group=group_train)
-    #lgb_train = lgb.Dataset(X_train, y_train,  group=qids_train)
-    #lgb_eval = lgb.Dataset(X_valid, y_valid, reference=lgb_train, group=qids_valid)
-    lgb_eval = lgb.Dataset(vali, reference=lgb_train, group=group_vali)
-    #lgb_test = lgb.Dataset(X_test, y_test, reference=lgb_train, group=qids_test)
-    lgb_test = lgb.Dataset(test, reference=lgb_train, group=group_test)
-    #lgb_test = lgb.Dataset(X_test, y_test, reference=lgb_train, group=qids_test)
+            print('Saving model...')
+            # save model to file
+            gbm.save_model(f'lightgbm.{objective}.{data}.model')
 
-    # specify your configurations as a dict
-    params = {
-        'boosting_type': 'gbdt',
-        'objective': 'lambdarank',
-        'metric': {'ndcg', "map"},
-        'eval_at': [1, 3, 5, 10],
-        "max_bin" : 255, #max number of bins that feature values will be bucketed in
-        'learning_rate': 0.1,
-        'num_leaves': 255,
-        "num_iterations": 500,
-        'num_threads': 6,
-        'min_data_in_leaf': 1,
-        "task":"train",
-        "tree_learner": "serial",
-        'min_sum_hessian_in_leaf': 100,
-        #"early_stopping_rounds":50
-    }
+            print('Starting predicting...')
 
-    print('Starting training...')
+            y_pred = gbm.predict(vali, num_iteration=gbm.best_iteration)
+            # eval
+            lgb_vali.construct()
+            dataset = lgb_vali.get_data()
+            dataset["predicted_ranking"] = y_pred
+            dataset.sort_values("predicted_ranking", ascending=False)
+            dataset.to_csv(f'lightgbm.{objective}.{data}.vali.predicted.csv')
 
-    # train
-    eval_result = {}
-    gbm = lgb.train(params,
-                    lgb_train,
-                    #num_boost_round=250,
-                    valid_sets=[ lgb_test],#lgb_eval
-                    valid_names = ['eval'],#'eval'
-                    evals_result =eval_result,
-                    #verbose_eval=10
-                    )
+            lgb.plot_importance(gbm, max_num_features=50)
+            #plt.show()
+            plt.savefig(f'train.lgbm.{objective}.{data}.importance.png', dpi=1920, orientation='portrait')
 
+            lgb.plot_tree(gbm)
+            #plt.show()
+            plt.savefig(f'train.lgbm.{objective}.{data}.tree.png', dpi=1920, orientation='portrait')
 
+            print('fim')
 
-    print('Saving model...')
-    # save model to file
-    gbm.save_model('lightgbm.model')
-
-    print('Starting predicting...')
-
-    y_pred = gbm.predict(vali)
-    # predictions_classes = []
-    # for index, instance in df_test.iterrows():
-    #     actual = instance['relevance']
-    #     prediction = round(y_pred[index])
-    #     predictions_classes.append(round(prediction))
-    #     #print("actual= ", actual, ", prediction= ", prediction)
-
-    # predictions_classes = np.asarray([predictions_classes])
-
-    # accuracy = accuracy_score(predictions_classes[0], y_test)*100
-    # print(accuracy,"%")
-
-    # true_relevance = np.asarray([y_test.tolist()])
-
-
-
-    lgb.plot_importance(gbm, max_num_features = 50)
-    plt.show()
-
-    lgb.plot_tree(gbm)
-    plt.show()
-
-
-
-    print('fim')
-
-#with open('out.txt', 'w') as f:
-#    with redirect_stdout(f):
 evaluate()
