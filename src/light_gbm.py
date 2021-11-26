@@ -27,7 +27,7 @@ def evaluate():
         for objective in [ 'regression']:
             eval_result = {}
             param = 'rank' if 'rank' in objective else 'regression'
-            with open(f'train.lgbm.{objective}.{data}.log', 'w') as f:
+            with open(f'flaml_logs/train.lgbm.{objective}.{data}.log', 'w') as f:
                 paramsLIGHTGBM['objective'] = objective
                 with redirect_stdout(f):
                     gbm = lgb.train(paramsLIGHTGBM[param][data],
@@ -39,7 +39,7 @@ def evaluate():
 
             print('Saving model...')
             # save model to file
-            gbm.save_model(f'lightgbm.{objective}.{data}.model')
+            gbm.save_model(f'models/lightgbm.{objective}.{data}.model')
 
             print('Starting predicting...')
 
@@ -49,7 +49,7 @@ def evaluate():
             dataset["label"] = y_vali
             dataset["predicted_ranking"] = y_pred
             dataset.sort_values("predicted_ranking", ascending=False)
-            dataset.to_csv(f'lightgbm.{objective}.{data}.vali.predicted.csv')
+            dataset.to_csv(f'predicted_csv/lightgbm.{objective}.{data}.vali.predicted.csv')
 
             #lgb.plot_importance(gbm, max_num_features=30)
             #plt.show()
