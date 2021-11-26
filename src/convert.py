@@ -25,6 +25,7 @@ def convert(input_filename, out_data_filename, group_filename) -> list:
 		line = input.readline()
 		if not line:
 			break
+		line = line.split('#')[0]
 		tokens = line.split(' ')
 		tokens[-1] = tokens[-1].strip()
 		label = tokens[0]
