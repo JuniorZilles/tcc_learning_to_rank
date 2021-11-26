@@ -23,13 +23,14 @@ def evaluate():
         # specify your configurations as a dict
         print('Starting training...')
 
-        # train
-        for objective in ['lambdarank', 'rank_xendcg']:
+        # train 'lambdarank', 'rank_xendcg',
+        for objective in [ 'regression']:
             eval_result = {}
+            param = 'rank' if 'rank' in objective else 'regression'
             with open(f'train.lgbm.{objective}.{data}.log', 'w') as f:
                 paramsLIGHTGBM['objective'] = objective
                 with redirect_stdout(f):
-                    gbm = lgb.train(paramsLIGHTGBM[data],
+                    gbm = lgb.train(paramsLIGHTGBM[param][data],
                                 lgb_train,
                                 valid_sets=[lgb_test],
                                 valid_names=['eval'], 
@@ -50,13 +51,13 @@ def evaluate():
             dataset.sort_values("predicted_ranking", ascending=False)
             dataset.to_csv(f'lightgbm.{objective}.{data}.vali.predicted.csv')
 
-            lgb.plot_importance(gbm, max_num_features=50)
+            #lgb.plot_importance(gbm, max_num_features=30)
             #plt.show()
-            plt.savefig(f'train.lgbm.{objective}.{data}.importance.png', dpi=1920, orientation='portrait')
+            #plt.savefig(f'train.lgbm.{objective}.{data}.importance.png', dpi=1920, orientation='portrait')
 
-            lgb.plot_tree(gbm)
+            #lgb.plot_tree(gbm)
             #plt.show()
-            plt.savefig(f'train.lgbm.{objective}.{data}.tree.png', dpi=1920, orientation='portrait')
+            #plt.savefig(f'train.lgbm.{objective}.{data}.tree.png', dpi=1920, orientation='portrait')
 
             print('fim')
 
