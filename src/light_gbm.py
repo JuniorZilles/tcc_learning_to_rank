@@ -4,6 +4,7 @@ from sklearn.datasets import load_svmlight_file
 import matplotlib.pyplot as plt
 import pandas as pd
 import lightgbm as lgb
+import time
 from contextlib import redirect_stdout
 from params import paramsLIGHTGBM
 
@@ -14,51 +15,40 @@ def evaluate():
         test = str(pathtrain/f"{data}.test")
         vali = str(pathtrain/f"{data}.vali")
         train_group = read_group(str(pathtrain/f"{data}.train.group"))
-        test_group = read_group(str(pathtrain/f"{data}.test.group"))
+        vali_group = read_group(str(pathtrain/f"{data}.vali.group"))
 
         lgb_train = lgb.Dataset(train, group=train_group)
-        lgb_test = lgb.Dataset(test, reference=lgb_train, group=test_group)
+        lgb_vali = lgb.Dataset(vali, reference=lgb_train, group=vali_group)
 
-
-        # specify your configurations as a dict
         print('Starting training...')
-
-        # train 'lambdarank', 'rank_xendcg',
-        for objective in [ 'regression']:
+        for objective in ['regression', 'lambdarank', 'rank_xendcg']:
             eval_result = {}
             param = 'rank' if 'rank' in objective else 'regression'
-            with open(f'flaml_logs/train.lgbm.{objective}.{data}.log', 'w') as f:
+            with open(f'train_logs/train.lgbm.{objective}.{data}.log', 'w') as f:
                 paramsLIGHTGBM['objective'] = objective
                 with redirect_stdout(f):
+                    inicio = time.time()
                     gbm = lgb.train(paramsLIGHTGBM[param][data],
                                 lgb_train,
-                                valid_sets=[lgb_test],
+                                valid_sets=[lgb_vali],
                                 valid_names=['eval'], 
                                 evals_result=eval_result,
                                 )
+                    fim = time.time()
+                    print("Tempo de execução Total: " + str(fim - inicio) + " segundos")
 
             print('Saving model...')
-            # save model to file
             gbm.save_model(f'models/lightgbm.{objective}.{data}.model')
 
             print('Starting predicting...')
 
-            y_pred = gbm.predict(vali, num_iteration=gbm.best_iteration)
-            X_vali, y_vali = load_svmlight_file(vali)
-            dataset = pd.DataFrame(X_vali.todense())
-            dataset["label"] = y_vali
+            y_pred = gbm.predict(test, num_iteration=gbm.best_iteration)
+            X_test, y_test = load_svmlight_file(test)
+            dataset = pd.DataFrame(X_test.todense())
+            dataset["label"] = y_test
             dataset["predicted_ranking"] = y_pred
             dataset.sort_values("predicted_ranking", ascending=False)
-            dataset.to_csv(f'predicted_csv/lightgbm.{objective}.{data}.vali.predicted.csv')
+            dataset.to_csv(f'predicted_csv/lightgbm.{objective}.{data}.test.predicted.csv')
 
-            #lgb.plot_importance(gbm, max_num_features=30)
-            #plt.show()
-            #plt.savefig(f'train.lgbm.{objective}.{data}.importance.png', dpi=1920, orientation='portrait')
-
-            #lgb.plot_tree(gbm)
-            #plt.show()
-            #plt.savefig(f'train.lgbm.{objective}.{data}.tree.png', dpi=1920, orientation='portrait')
-
-            print('fim')
 
 evaluate()
