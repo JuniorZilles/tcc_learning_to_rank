@@ -201,7 +201,7 @@ paramsXGBOOST = {
             'learning_rate': 0.016263496225823983,
             'max_leaves': 2101,
             'min_child_weight': 2.013770729141695,
-            'n_estimators': 500,
+            'n_estimators': 5283,
             'reg_alpha': 0.005771390107656191,
             'reg_lambda': 29.95845033699892,
             'subsample': 0.8670450883215518,
@@ -225,7 +225,7 @@ paramsXGBOOST = {
             'learning_rate': 0.04150683071710864,
             'max_leaves': 10562,
             'min_child_weight': 28.414857248787246,
-            'n_estimators': 500,
+            'n_estimators': 1394,
             'reg_alpha': 0.03808491197379865,
             'reg_lambda': 78.682470221959,
             'subsample': 1.0,
@@ -249,7 +249,7 @@ paramsXGBOOST = {
             'learning_rate': 0.05971667906077382,
             'max_leaves': 6,
             'min_child_weight': 0.0023363932250244643,
-            'n_estimators': 500,
+            'n_estimators': 262,
             'reg_alpha': 0.07465263408571109,
             'reg_lambda': 1.3375464322813144,
             'subsample': 1.0,
@@ -273,7 +273,7 @@ paramsXGBOOST = {
             'learning_rate': 0.2957301397427999,
             'max_leaves': 14,
             'min_child_weight': 39.49176269981315,
-            'n_estimators': 500,
+            'n_estimators': 189,
             'reg_alpha': 0.0009765625,
             'reg_lambda': 1.3924444623044632,
             'subsample': 0.7632639008961464,
@@ -297,7 +297,7 @@ paramsXGBOOST = {
             'learning_rate': 0.17843775559599553,
             'max_leaves': 9,
             'min_child_weight': 105.58222098344942,
-            'n_estimators': 500,
+            'n_estimators': 209,
             'reg_alpha': 0.03253691984043954,
             'reg_lambda': 0.8190242606700081,
             'subsample': 0.7584845947221882,
@@ -314,7 +314,7 @@ paramsXGBOOST = {
     },
     'regression': {
         'MSLR10K': {
-            'n_estimators': 500,
+            'n_estimators': 31891,
             'max_leaves': 112,
             'min_child_weight': 25.75814708471507,
             'learning_rate': 0.03898792355723405,
@@ -333,7 +333,7 @@ paramsXGBOOST = {
             'eval_metric': ['ndcg@1', 'ndcg@3', 'ndcg@5', 'ndcg@10']
         },
         'MSLR30K': {
-            'n_estimators': 500, 
+            'n_estimators': 579, 
             'max_leaves': 815, 
             'min_child_weight': 28.9260991357929, 
             'learning_rate': 0.09752093004552172, 
@@ -352,7 +352,7 @@ paramsXGBOOST = {
             'eval_metric': ['ndcg@1', 'ndcg@3', 'ndcg@5', 'ndcg@10']
         },
         'OHSUMED': {
-            'n_estimators': 500, 
+            'n_estimators': 977, 
             'max_leaves': 36, 
             'min_child_weight': 19.654623239262484, 
             'learning_rate': 0.009713748360238814, 
@@ -371,7 +371,7 @@ paramsXGBOOST = {
             'eval_metric': ['ndcg@1', 'ndcg@3', 'ndcg@5', 'ndcg@10']
         },
         'TD2003': {
-            'n_estimators': 500, 
+            'n_estimators': 6421, 
             'max_leaves': 472, 
             'min_child_weight': 0.31666950361759233, 
             'learning_rate': 0.006585052123791817, 
@@ -390,7 +390,7 @@ paramsXGBOOST = {
             'eval_metric': ['ndcg@1', 'ndcg@3', 'ndcg@5', 'ndcg@10']
         },
         'TD2004': {
-            'n_estimators': 500, 
+            'n_estimators': 1585, 
             'max_leaves': 24, 
             'min_child_weight': 1.195478888996068, 
             'learning_rate': 0.00488018327580208, 

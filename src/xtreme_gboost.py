@@ -23,7 +23,7 @@ def evaluate_xgboost():
             with open(f'train_logs/train.xgboost.{objective}.{data}.log', 'w') as f:
                 with redirect_stdout(f):
                     inicio = time.time()
-                    bst = xgb.train(paramsXGBOOST[objective][data], dtrain, evals=eval)
+                    bst = xgb.train(paramsXGBOOST[objective][data], dtrain, 500, evals=eval)
                     fim = time.time()
                     print("Tempo de execução Total: " + str(fim - inicio) + " segundos")
             print('Salvando o modelo')
@@ -35,7 +35,7 @@ def evaluate_xgboost():
             dataset = pd.DataFrame(X_test.todense())
             dataset["label"] = y_test
             dataset["predicted_ranking"] = y_pred
-            dataset.sort_values("predicted_ranking", ascending=False)
+            #dataset.sort_values("predicted_ranking", ascending=False)
             dataset.to_csv(f'predicted_csv/xgboost.{objective}.{data}.test.predicted.csv')
 
 
