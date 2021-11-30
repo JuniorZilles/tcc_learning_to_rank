@@ -17,11 +17,10 @@ def evaluate():
         train_group = read_group(str(pathtrain/f"{data}.train.group"))
         vali_group = read_group(str(pathtrain/f"{data}.vali.group"))
 
-        lgb_train = lgb.Dataset(train, group=train_group)
-        lgb_vali = lgb.Dataset(vali, reference=lgb_train, group=vali_group)
-
         print('Starting training...')
         for objective in ['regression', 'lambdarank', 'rank_xendcg']:
+            lgb_train = lgb.Dataset(train, group=train_group)
+            lgb_vali = lgb.Dataset(vali, reference=lgb_train, group=vali_group)
             eval_result = {}
             param = 'rank' if 'rank' in objective else 'regression'
             with open(f'train_logs/train.lgbm.{objective}.{data}.log', 'w') as f:
@@ -47,7 +46,7 @@ def evaluate():
             dataset = pd.DataFrame(X_test.todense())
             dataset["label"] = y_test
             dataset["predicted_ranking"] = y_pred
-            dataset.sort_values("predicted_ranking", ascending=False)
+            #dataset.sort_values("predicted_ranking", ascending=False)
             dataset.to_csv(f'predicted_csv/lightgbm.{objective}.{data}.test.predicted.csv')
 
 
