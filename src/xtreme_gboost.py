@@ -1,51 +1,43 @@
 import xgboost as xgb
 from pathlib import Path
+import pandas as pd
+from sklearn.datasets import load_svmlight_file
+import time
 from contextlib import redirect_stdout
+from params import paramsXGBOOST
 
 def evaluate_xgboost():
+    for data in ['MSLR10K', 'MSLR30K', 'OHSUMED', 'TD2003', 'TD2004']:
+        path = Path(__file__).absolute().parents[1] / 'data' / data
+        test = str(path/f"{data}.test")
 
-    path = Path(__file__).absolute().parents[1] / 'data/Fold1'
+        print("Carregando arquivos")
+        dtrain = xgb.DMatrix(str(path/'train.txt'))
+        dvali = xgb.DMatrix(str(path/'vali.txt'))
+        dtest = xgb.DMatrix(str(path/'test.txt'))
 
-    print("Carregando arquivos")
-    dtrain = xgb.DMatrix(str(path/'train.txt'))
-    dvali = xgb.DMatrix(str(path/'test.txt'))
+        eval = [(dvali, 'eval')]
 
-    evallist = [(dvali, 'eval'), (dtrain, 'train')]
+        print('Treinando')
+        for objective in ['regression', 'rank']:
+            with open(f'train_logs/train.xgboost.{objective}.{data}.log', 'w') as f:
+                with redirect_stdout(f):
+                    inicio = time.time()
+                    bst = xgb.train(paramsXGBOOST[objective][data], dtrain, evals=eval)
+                    fim = time.time()
+                    print("Tempo de execução Total: " + str(fim - inicio) + " segundos")
+            print('Salvando o modelo')
+            bst.save_model(f'models/xgboost.{objective}.{data}.model')
 
-
-    param = {"eta": 0.1,
-            "max_depth": 8,
-            
-            "min_child_weight": 100,
-            "nthread": 6,
-            "gamma": 0,
-            "lambda": 0,
-            "alpha": 0,
-            "verbosity": 2,
-            "tree_method": "exact",
-            'objective': 'rank:ndcg',
-            "task":"train",
-            'eval_metric': ["map@1", "map@3", "map@5", "map@10", 'ndcg@1', 'ndcg@3', 'ndcg@5', 'ndcg@10']}
-
-    print('Treinando')
-    num_round = 500
-    bst = xgb.train(param, dtrain, num_round, evallist)
-
-    print('Salvando o modelo')
-    bst.save_model('xgboost.model')
-
-    print('Predizendo')
-    dtest = xgb.DMatrix(str(path/'test.txt'))
-
-    ypred = bst.predict(dtest, iteration_range=(0, bst.best_iteration))
-
-    print('Plotando as importancias das features')
-    xgb.plot_importance(bst)
-
-    print('Plotando 2 das arvores')
-    xgb.plot_tree(bst, num_trees=2)
+            print('Predizendo')
+            y_pred = bst.predict(dtest)
+            X_test, y_test = load_svmlight_file(test)
+            dataset = pd.DataFrame(X_test.todense())
+            dataset["label"] = y_test
+            dataset["predicted_ranking"] = y_pred
+            dataset.sort_values("predicted_ranking", ascending=False)
+            dataset.to_csv(f'predicted_csv/xgboost.{objective}.{data}.test.predicted.csv')
 
 
-#with open('out_xgboost.txt', 'w') as f:
-#    with redirect_stdout(f):
+
 evaluate_xgboost()
