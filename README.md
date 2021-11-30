@@ -9,8 +9,8 @@
 
 [![Python](https://img.shields.io/badge/language-python-blue.svg)]()
 [![Status](https://img.shields.io/badge/status-active-success.svg)]()
-[![GitHub Issues](https://img.shields.io/github/issues/JuniorZilles/tcc_learning_to_rank.svg)](https://github.com/JuniorZilles/tcc_learning_to_rank/issues)
-[![GitHub Pull Requests](https://img.shields.io/github/issues-pr/JuniorZilles/tcc_learning_to_rank.svg)](https://github.com/JuniorZilles/tcc_learning_to_rank/pulls)
+[![GitHub issues](https://img.shields.io/github/issues/JuniorZilles/tcc_learning_to_rank.svg)](https://GitHub.com/JuniorZilles/tcc_learning_to_rank/issues/)
+[![GitHub pull-requests](https://img.shields.io/github/issues-pr/JuniorZilles/tcc_learning_to_rank.svg)](https://GitHub.com/JuniorZilles/tcc_learning_to_rank/pull/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE)
 
 </div>
@@ -27,11 +27,6 @@
 - [Getting Started](#getting_started)
 - [Deployment](#deployment)
 - [Usage](#usage)
-- [Built Using](#built_using)
-- [TODO](../TODO.md)
-- [Contributing](../CONTRIBUTING.md)
-- [Authors](#authors)
-- [Acknowledgments](#acknowledgement)
 
 ## 🧐 About <a name = "about"></a>
 
@@ -78,23 +73,3 @@ Give an example
 
 Add notes about how to use the system.
 
-## 🚀 Deployment <a name = "deployment"></a>
-
-Add additional notes about how to deploy this on a live system.
-
-## ⛏️ Built Using <a name = "built_using"></a>
-
-- [Python](https://www.python.org/)
-
-
-## ✍️ Authors <a name = "authors"></a>
-
-- [@kylelobo](https://github.com/kylelobo) - Idea & Initial work
-
-See also the list of [contributors](https://github.com/kylelobo/The-Documentation-Compendium/contributors) who participated in this project.
-
-## 🎉 Acknowledgements <a name = "acknowledgement"></a>
-
-- Hat tip to anyone whose code was used
-- Inspiration
-- References
