@@ -83,14 +83,45 @@ def toDataframe(input_filename: str):
 	labelsnp = np.array(labels)
 	return querygroup, labelsnp, df
 
-for data in ['MSLR10K', 'MSLR30K', 'OHSUMED', 'TD2003', 'TD2004']:
-	pathtrain = Path(__file__).absolute().parents[1] / 'data' / data
-	train = str(pathtrain/f"{data}.train")
-	test = str(pathtrain/f"{data}.test")
-	vali = str(pathtrain/f"{data}.vali")
-	train_group = str(pathtrain/f"{data}.train.group")
-	test_group = str(pathtrain/f"{data}.test.group")
-	vali_group = str(pathtrain/f"{data}.vali.group")
-	convert(str(pathtrain/'train.txt'), train, train_group)
-	convert(str(pathtrain/'test.txt'), test, test_group)
-	convert(str(pathtrain/'vali.txt'), vali, vali_group)
+def toOrdenedFile(input: str, output:str):
+	input = open(input, "r")
+	itens = {}
+	while True:
+		line = input.readline()
+		if not line:
+			break
+		tokens = line.split(' ')
+		tokens[-1] = tokens[-1].strip()
+		qid = int(tokens[1].split(':')[1])
+		if qid not in itens:
+			itens[qid] = [line]
+		else:
+			itens[qid].append(line)
+	input.close()
+	with open(output, "a") as wr:
+		keys = list(itens.keys())
+		keys.sort()
+		for qid in keys:
+			for line in itens[qid]:
+				wr.write(line)
+	
+
+def transform_lightgbm_flaml():
+	for data in ['MSLR10K', 'MSLR30K', 'OHSUMED', 'TD2003', 'TD2004']:
+		pathtrain = Path(__file__).absolute().parents[1] / 'data' / data
+		train = str(pathtrain/f"{data}.train")
+		test = str(pathtrain/f"{data}.test")
+		vali = str(pathtrain/f"{data}.vali")
+		train_group = str(pathtrain/f"{data}.train.group")
+		test_group = str(pathtrain/f"{data}.test.group")
+		vali_group = str(pathtrain/f"{data}.vali.group")
+		convert(str(pathtrain/'train.txt'), train, train_group)
+		convert(str(pathtrain/'test.txt'), test, test_group)
+		convert(str(pathtrain/'vali.txt'), vali, vali_group)
+
+def transform_ranksvm():
+	for data in ['MSLR10K', 'MSLR30K', 'OHSUMED', 'TD2003', 'TD2004']:
+		pathtrain = Path(__file__).absolute().parents[1] / 'data' / data
+		toOrdenedFile(str(pathtrain/'train.txt'), str(pathtrain/'train.dat'))
+
+transform_ranksvm()
