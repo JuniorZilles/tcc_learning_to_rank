@@ -14,10 +14,22 @@ def read_group(filename: str):
 	input.close()
 	return querygroup
 
-def convert(input_filename, out_data_filename, group_filename) -> list:
+def read_score(filename: str):
+	input = open(filename, "r")
+	querygroup = []
+	while True:
+		line = input.readline()
+		if not line:
+			break
+		querygroup.append(float(line))
+	input.close()
+	return querygroup
+
+def convert(input_filename, out_data_filename, group_filename, labels_filename) -> list:
 	input = open(input_filename, "r")
 	output_feature = open(out_data_filename, "w")
 	output_group = open(group_filename, "w")
+	output_label = open(labels_filename, "w")
 	cur_cnt = 0
 	cur_doc_cnt = 0
 	last_qid = -1
@@ -37,12 +49,14 @@ def convert(input_filename, out_data_filename, group_filename) -> list:
 			cur_doc_cnt = 0
 			last_qid = qid
 		cur_doc_cnt += 1
+		output_label.write(label+'\n')
 		output_feature.write(label+' ')
 		output_feature.write(' '.join(tokens[2:]) + '\n')
 	output_group.write(str(cur_doc_cnt) + '\n')
 
 	input.close()
 	output_feature.close()
+	output_label.close()
 	output_group.close()
 
 
@@ -115,13 +129,16 @@ def transform_lightgbm_flaml():
 		train_group = str(pathtrain/f"{data}.train.group")
 		test_group = str(pathtrain/f"{data}.test.group")
 		vali_group = str(pathtrain/f"{data}.vali.group")
-		convert(str(pathtrain/'train.txt'), train, train_group)
-		convert(str(pathtrain/'test.txt'), test, test_group)
-		convert(str(pathtrain/'vali.txt'), vali, vali_group)
+		train_label = str(pathtrain/f"{data}.train.label")
+		test_label = str(pathtrain/f"{data}.test.label")
+		vali_label = str(pathtrain/f"{data}.vali.label")
+		convert(str(pathtrain/'train.txt'), train, train_group, train_label)
+		convert(str(pathtrain/'test.txt'), test, test_group, test_label)
+		convert(str(pathtrain/'vali.txt'), vali, vali_group, vali_label)
 
 def transform_ranksvm():
 	for data in ['MSLR10K', 'MSLR30K', 'OHSUMED', 'TD2003', 'TD2004']:
 		pathtrain = Path(__file__).absolute().parents[1] / 'data' / data
 		toOrdenedFile(str(pathtrain/'train.txt'), str(pathtrain/'train.dat'))
 
-transform_ranksvm()
+transform_lightgbm_flaml()

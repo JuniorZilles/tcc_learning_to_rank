@@ -31,12 +31,17 @@ def evaluate_xgboost():
 
             print('Predizendo')
             y_pred = bst.predict(dtest)
-            X_test, y_test = load_svmlight_file(test)
-            dataset = pd.DataFrame(X_test.todense())
-            dataset["label"] = y_test
-            dataset["predicted_ranking"] = y_pred
-            #dataset.sort_values("predicted_ranking", ascending=False)
-            dataset.to_csv(f'predicted_csv/xgboost.{objective}.{data}.test.predicted.csv')
+            # X_test, y_test = load_svmlight_file(test)
+            # dataset = pd.DataFrame(X_test.todense())
+            # dataset["label"] = y_test
+            # dataset["predicted_ranking"] = y_pred
+            # #dataset.sort_values("predicted_ranking", ascending=False)
+            # dataset.to_csv(f'predicted_csv/xgboost.{objective}.{data}.test.predicted.csv')
+            ll = []
+            for a in y_pred:
+                ll.append(str(a))
+            with open(f'predicted/xgboost.{objective}.{data}.txt', 'w') as outfile:
+                outfile.write("\n".join(ll))
 
 
 

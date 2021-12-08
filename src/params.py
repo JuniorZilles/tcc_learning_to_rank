@@ -1,5 +1,5 @@
 paramsLIGHTGBM = {
-    'rank': {
+    'lambdarank': {
         'MSLR10K': {
             'boosting_type': 'gbdt',
             'objective': 'lambdarank',
@@ -77,6 +77,100 @@ paramsLIGHTGBM = {
         'TD2004': {
             'boosting_type': 'gbdt',
             'objective': 'lambdarank',
+            'metric': {'ndcg'},
+            'eval_at': [1, 3, 5, 10],
+            "max_bin": 127,
+            'learning_rate': 0.13293076054099615,
+            'num_leaves': 30,
+            'num_threads': 6,
+            "task": "train",
+            "tree_learner": "serial",
+            'min_sum_hessian_in_leaf': 100,
+            'colsample_bytree': 0.39193749769580893,
+            'min_child_samples': 7,
+            'n_estimators': 500,
+            'reg_alpha': 0.0009765625,
+            'reg_lambda': 0.001854721778201423
+        }
+    },
+    'rank_xendcg': {
+        'MSLR10K': {
+            'boosting_type': 'gbdt',
+            'objective': 'rank_xendcg',
+            'metric': {'ndcg'},
+            'eval_at': [1, 3, 5, 10],
+            "max_bin": 1023,
+            'learning_rate': 0.025270491603796262,
+            'num_leaves': 1654,
+            'num_threads': 6,
+            "task": "train",
+            'colsample_bytree': 0.5352389267588501,
+            'min_child_samples': 13,
+            'n_estimators': 500,
+            'reg_alpha': 0.0009765625,
+            'reg_lambda': 1.884565717822921
+        },
+
+        'MSLR30K': {
+            'boosting_type': 'gbdt',
+            'objective': 'rank_xendcg',
+            'metric': {'ndcg'},
+            'eval_at': [1, 3, 5, 10],
+            "max_bin": 255,
+            'learning_rate': 0.06965278708163959,
+            'num_leaves': 748,
+            'num_threads': 6,
+            "task": "train",
+            "tree_learner": "serial",
+            'min_sum_hessian_in_leaf': 100,
+            'colsample_bytree': 0.6414824569621735,
+            'min_child_samples': 6,
+            'n_estimators': 500,
+            'reg_alpha': 0.008134726385695373,
+            'reg_lambda': 0.009468060528091142
+        },
+
+        'OHSUMED': {
+            'boosting_type': 'gbdt',
+            'objective': 'rank_xendcg',
+            'metric': {'ndcg'},
+            'eval_at': [1, 3, 5, 10],
+            "max_bin": 255,
+            'learning_rate': 0.338491377691658,
+            'num_leaves': 6,
+            'num_threads': 6,
+            "task": "train",
+            "tree_learner": "serial",
+            'min_sum_hessian_in_leaf': 100,
+            'colsample_bytree': 0.9316344343793237,
+            'min_child_samples': 18,
+            'n_estimators': 500,
+            'reg_alpha': 0.004707909336099823,
+            'reg_lambda': 0.868065610491686
+        },
+
+        'TD2003': {
+            'boosting_type': 'gbdt',
+            'objective': 'rank_xendcg',
+            'metric': {'ndcg'},
+            'eval_at': [1, 3, 5, 10],
+            "max_bin": 1023,
+            'learning_rate': 0.03204701965930414,
+            'num_leaves': 19,
+            'num_threads': 6,
+            "task": "train",
+            "tree_learner": "serial",
+            'min_sum_hessian_in_leaf': 100,
+            'colsample_bytree': 0.43048078079194657,
+            'min_child_samples': 11,
+            'n_estimators': 500,
+            'reg_alpha': 0.0012628083914845523,
+            'reg_lambda': 0.005042861374607481
+        },
+
+        'TD2004': {
+            'boosting_type': 'gbdt',
+            'objective': 'rank_xendcg',
             'metric': {'ndcg'},
             'eval_at': [1, 3, 5, 10],
             "max_bin": 127,
