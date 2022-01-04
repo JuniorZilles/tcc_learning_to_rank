@@ -73,3 +73,14 @@ Give an example
 
 Add notes about how to use the system.
 
+
+## train SVM
+
+svm_rank_learn -c 3 -t 2 data/MSLR30K/train.dat models/rankSVM.MSLR30K.model 1> train_logs/train.rankSVM.MSLR30K.log 2>&1 
+
+## evaluate datasets from letor 3.0
+
+perl Eval-Score-3.0.pl data/TD2004/test.txt predicted/xgboost.regression.td2004.txt evaluation_letor\xgboost.regression.td2004.txt 0
+
+## evaluate datasets MSLR30K and MSLR10K
+perl Eval-Score-MSLR.pl data/MSLR10K/test.txt predicted/xgboost.regression.mslr10k.txt evaluation_letor\xgboost.regression.mslr10k.txt 0

@@ -15,7 +15,8 @@ def evaluate():
         vali_group = read_group(str(pathtrain/f"{data}.vali.group"))
 
         print('Starting training...')
-        for objective in [ 'regression', 'lambdarank', 'rank_xendcg']:
+        
+        for objective in ['regression', 'lambdarank', 'rank_xendcg']:
             lgb_train = lgb.Dataset(train, group=train_group)
             lgb_vali = lgb.Dataset(vali, reference=lgb_train, group=vali_group)
             eval_result = {}
@@ -36,7 +37,7 @@ def evaluate():
 
             print('Starting predicting...')
 
-            y_pred = gbm.predict(test, num_iteration=gbm.best_iteration)
+            y_pred = gbm.predict(test)
             # X_test, y_test = load_svmlight_file(test)
             # dataset = pd.DataFrame(X_test.todense())
             # dataset["label"] = y_test

@@ -6,7 +6,7 @@ import time
 from contextlib import redirect_stdout
 from params import paramsXGBOOST
 
-def evaluate_xgboost():
+def evaluate_xgboost(): 
     for data in ['MSLR10K', 'MSLR30K', 'OHSUMED', 'TD2003', 'TD2004']:
         path = Path(__file__).absolute().parents[1] / 'data' / data
         test = str(path/f"{data}.test")
@@ -23,7 +23,10 @@ def evaluate_xgboost():
             with open(f'train_logs/train.xgboost.{objective}.{data}.log', 'w') as f:
                 with redirect_stdout(f):
                     inicio = time.time()
-                    bst = xgb.train(paramsXGBOOST[objective][data], dtrain, 500, evals=eval)
+                    boost = 500
+                    if 'MSLR' not in data:
+                        boost = 100
+                    bst = xgb.train(paramsXGBOOST[objective][data], dtrain, boost, evals=eval)
                     fim = time.time()
                     print("Tempo de execução Total: " + str(fim - inicio) + " segundos")
             print('Salvando o modelo')

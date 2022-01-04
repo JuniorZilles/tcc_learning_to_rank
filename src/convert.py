@@ -6,23 +6,20 @@ from pathlib import Path
 def read_group(filename: str):
 	input = open(filename, "r")
 	querygroup = []
-	while True:
-		line = input.readline()
-		if not line:
-			break
-		querygroup.append(int(line))
+	lines = input.readlines()
 	input.close()
+	for line in lines:
+		querygroup.append(int(line))
 	return querygroup
 
 def read_score(filename: str):
 	input = open(filename, "r")
 	querygroup = []
-	while True:
-		line = input.readline()
-		if not line:
-			break
-		querygroup.append(float(line))
+	lines = input.readlines()
 	input.close()
+	for line in lines:
+		querygroup.append(float(line))
+	
 	return querygroup
 
 def convert(input_filename, out_data_filename, group_filename, labels_filename) -> list:
@@ -140,5 +137,6 @@ def transform_ranksvm():
 	for data in ['MSLR10K', 'MSLR30K', 'OHSUMED', 'TD2003', 'TD2004']:
 		pathtrain = Path(__file__).absolute().parents[1] / 'data' / data
 		toOrdenedFile(str(pathtrain/'train.txt'), str(pathtrain/'train.dat'))
+		toOrdenedFile(str(pathtrain/'test.txt'), str(pathtrain/'test.dat'))
 
-transform_lightgbm_flaml()
+transform_ranksvm()

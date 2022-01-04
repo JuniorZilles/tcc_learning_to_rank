@@ -148,3 +148,7 @@ model.txt
 *.model
 out*.txt
 *.csv
+predicted/*
+labels/*
+images/*
+evaluation*/*
