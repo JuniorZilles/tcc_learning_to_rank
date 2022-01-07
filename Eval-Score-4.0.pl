@@ -1,5 +1,6 @@
 #!
-# author: Jun Xu and Tie-Yan Liu#!
+# author: Jun Xu and Tie-Yan Liu
+# modified by Jun Xu, March 3, 2009 (for Letor 4.0)
 use strict;
 
 #hash table for NDCG,
@@ -13,8 +14,10 @@ my %hsPrecisionRel = ("2", 1,
                       "1", 1,
                       "0", 0
                 );
-
-my $iMaxPosition = 16;
+#modified by Jun Xu, March 3, 2009
+# for Letor 4.0. only output top 10 precision and ndcg
+# my $iMaxPosition = 16;
+my $iMaxPosition = 10;
 
 my $argc = $#ARGV+1;
 if($argc != 4)
@@ -48,80 +51,86 @@ sub OuputResults
 {
     my ($fnOut, %hsResult) = @_;
     open(FOUT, ">$fnOut");
-    my @Ndcg;
-    my @PAtN;
-    my $MAP;
 
     my @qids = sort{$a <=> $b} keys(%hsResult);
     my $numQuery = @qids;
-    #Precision@N
+    
+#Precision@N and MAP
+# modified by Jun Xu, March 3, 2009
+# changing the output format
+    print FOUT "qid\tP\@1\tP\@2\tP\@3\tP\@4\tP\@5\tP\@6\tP\@7\tP\@8\tP\@9\tP\@10\tMAP\n";
+#---------------------------------------------
     my @prec;
+    my $map = 0;
     for(my $i = 0; $i < $#qids + 1; $i ++)
     {
+# modified by Jun Xu, March 3, 2009
+# output the real query id    	
         my $qid = $qids[$i];
         my @pN = @{$hsResult{$qid}{"PatN"}};
+        my $map_q = $hsResult{$qid}{"MAP"};
         if ($flag == 1)
         {
-            print FOUT "precision of query$i:\t";
-            print FOUT join("\t", @pN);
-            print FOUT "\t\n";
+            print FOUT "$qid\t";
+            for(my $iPos = 0; $iPos < $iMaxPosition; $iPos ++)
+            {
+                print FOUT sprintf("%.4f\t", $pN[$iPos]);
+            }
+            print FOUT sprintf("%.4f\n", $map_q);
         }
-        for(my $iPos = 0; $iPos < $#pN + 1; $iPos ++)
+        for(my $iPos = 0; $iPos < $iMaxPosition; $iPos ++)
         {
             $prec[$iPos] += $pN[$iPos];
         }
+        $map += $map_q;
     }
-    for(my $iPos = 0; $iPos < $#prec + 1; $iPos ++)
+    print FOUT "Average\t";
+    for(my $iPos = 0; $iPos < $iMaxPosition; $iPos ++)
     {
         $prec[$iPos] /= ($#qids + 1);
+        print FOUT sprintf("%.4f\t", $prec[$iPos]);
     }
-    print FOUT "precision:\t";
-    print FOUT join("\t", @prec);
-    print FOUT "\t\n\n";
+    $map /= ($#qids + 1);
+    print FOUT sprintf("%.4f\n\n", $map);
     
-    #MAP
-    my $Map = 0;
-    for(my $i = 0; $i < $#qids + 1; $i ++)
-    {
-        my $qid = $qids[$i];
-        my $avgP = $hsResult{$qid}{"MAP"};
-        if ($flag == 1)
-        {
-            print FOUT "Map of query$i:\t";
-            print FOUT $avgP;
-            print FOUT "\n";
-        }
-        $Map += $avgP;
-    }
-    $Map /= ($#qids + 1);
-    print FOUT "MAP:\t";
-    print FOUT "$Map";
-    print FOUT "\n\n";
-    
-    #NDCG
+#NDCG and MeanNDCG
+# modified by Jun Xu, March 3, 2009
+# changing the output format
+    print FOUT "qid\tNDCG\@1\tNDCG\@2\tNDCG\@3\tNDCG\@4\tNDCG\@5\tNDCG\@6\tNDCG\@7\tNDCG\@8\tNDCG\@9\tNDCG\@10\tMeanNDCG\n";
+#---------------------------------------------
     my @ndcg;
+    my $meanNdcg = 0;
     for(my $i = 0; $i < $#qids + 1; $i ++)
     {
+# modified by Jun Xu, March 3, 2009
+# output the real query id
         my $qid = $qids[$i];
         my @ndcg_q = @{$hsResult{$qid}{"NDCG"}};
+        my $meanNdcg_q = $hsResult{$qid}{"MeanNDCG"};
         if ($flag == 1)
         {
-            print FOUT "NDCG of query$i:\t";
-            print FOUT join("\t", @ndcg_q);
-            print FOUT "\t\n";
+            print FOUT "$qid\t";
+            for(my $iPos = 0; $iPos < $iMaxPosition; $iPos ++)
+            {
+                print FOUT sprintf("%.4f\t", $ndcg_q[$iPos]);
+            }
+            print FOUT sprintf("%.4f\n", $meanNdcg_q);
         }
-        for(my $iPos = 0; $iPos < $#ndcg_q + 1; $iPos ++)
+        for(my $iPos = 0; $iPos < $iMaxPosition; $iPos ++)
         {
             $ndcg[$iPos] += $ndcg_q[$iPos];
         }
+        $meanNdcg += $meanNdcg_q;
     }
-    print FOUT "NDCG:\t";
-    for(my $iPos = 0; $iPos < $#ndcg + 1; $iPos ++)
+    print FOUT "Average\t";
+    for(my $iPos = 0; $iPos < $iMaxPosition; $iPos ++)
     {
         $ndcg[$iPos] /= ($#qids + 1);
-        print FOUT "$ndcg[$iPos]\t";
+        print FOUT sprintf("%.4f\t", $ndcg[$iPos]);
     }
-    print FOUT "\n\n";
+    $meanNdcg /= ($#qids + 1);
+    print FOUT sprintf("%.4f\n\n", $meanNdcg);
+
     close(FOUT);
 }
 
@@ -145,12 +154,23 @@ sub EvalQuery
 
         my $map  = MAP(@rates);
         my @PAtN = PrecisionAtN($iMaxPosition, @rates);
-        my @Ndcg = NDCG($iMaxPosition, @rates);
+# modified by Jun Xu, calculate all possible positions' NDCG for MeanNDCG
+        #my @Ndcg = NDCG($iMaxPosition, @rates);
+        
+        my @Ndcg = NDCG($#rates + 1, @rates);
+        my $meanNdcg = 0;
+        for(my $iPos = 0; $iPos < $#Ndcg + 1; $iPos ++)
+        {
+            $meanNdcg += $Ndcg[$iPos];
+        }
+        $meanNdcg /= ($#Ndcg + 1);
         
         
         @{$hsResults{$qid}{"PatN"}} = @PAtN;
         $hsResults{$qid}{"MAP"} = $map;
         @{$hsResults{$qid}{"NDCG"}} = @Ndcg;
+        $hsResults{$qid}{"MeanNDCG"} = $meanNdcg;
+
     }
     return %hsResults;
 }
@@ -188,14 +208,21 @@ sub ReadInputFiles
 # modified by Jun Xu, 2008-9-9
 # Labels may have more than 3 levels
 # qid and docid may not be numeric
-
 #        if ($lnFea =~ m/^([0-2]) qid\:(\d+).*?\#docid = (\d+)$/)
+
+# modified by Jun Xu, March 3, 2009
+# Letor 4.0's file format is different to Letor 3.0
         if ($lnFea =~ m/^(\d+) qid\:([^\s]+).*?\#docid = ([^\s]+)$/)
+        #if ($lnFea =~ m/^(\d+) qid\:([^\s]+).*?\#docid = ([^\s]+) inc = ([^\s]+) prob = ([^\s]+)$/)
         {
             my $label = $1;
             my $qid = $2;
             my $did = $3;
+            my $inc = $4;
+            my $prob= $5;
             $hsQueryDocLabelScore{$qid}{$did}{"label"} = $label;
+            $hsQueryDocLabelScore{$qid}{$did}{"inc"} = $inc;
+            $hsQueryDocLabelScore{$qid}{$did}{"prob"} = $prob;
             $hsQueryDocLabelScore{$qid}{$did}{"pred"} = $predScore;
             $hsQueryDocLabelScore{$qid}{$did}{"lineNum"} = $lineNum;
         }
@@ -216,9 +243,22 @@ sub PrecisionAtN
     my ($topN, @rates) = @_;
     my @PrecN;
     my $numRelevant = 0;
-    for(my $iPos = 0;  $iPos < $topN && $iPos < $#rates + 1; $iPos ++)
+#   modified by Jun Xu, 2009-4-24.
+#   if # retrieved doc <  $topN, the P@N will consider the hole as irrelevant
+#    for(my $iPos = 0;  $iPos < $topN && $iPos < $#rates + 1; $iPos ++)
+#
+    for (my $iPos = 0; $iPos < $topN; $iPos ++)
     {
-        $numRelevant ++ if ($hsPrecisionRel{$rates[$iPos]} == 1);
+        my $r;
+        if ($iPos < $#rates + 1)
+        {
+            $r = $rates[$iPos];
+        }
+        else
+        {
+            $r = 0;
+        }
+        $numRelevant ++ if ($hsPrecisionRel{$r} == 1);
         $PrecN[$iPos] = $numRelevant / ($iPos + 1);
     }
     return @PrecN;
@@ -249,16 +289,28 @@ sub DCG
     my @dcg;
     
     $dcg[0] = $hsNdcgRelScore{$rates[0]};
-    
-    for(my $iPos = 1; $iPos < $topN && $iPos < $#rates + 1; $iPos ++)
+#   Modified by Jun Xu, 2009-4-24
+#   if # retrieved doc <  $topN, the NDCG@N will consider the hole as irrelevant
+#    for(my $iPos = 1; $iPos < $topN && $iPos < $#rates + 1; $iPos ++)
+#
+    for(my $iPos = 1; $iPos < $topN; $iPos ++)
     {
-        if ($iPos < 2)
+        my $r;
+        if ($iPos < $#rates + 1)
         {
-            $dcg[$iPos] = $dcg[$iPos - 1] + $hsNdcgRelScore{$rates[$iPos]};
+            $r = $rates[$iPos];
         }
         else
         {
-            $dcg[$iPos] = $dcg[$iPos - 1] + ($hsNdcgRelScore{$rates[$iPos]} * log(2.0) / log($iPos + 1.0));
+            $r = 0;
+        }
+        if ($iPos < 2)
+        {
+            $dcg[$iPos] = $dcg[$iPos - 1] + $hsNdcgRelScore{$r};
+        }
+        else
+        {
+            $dcg[$iPos] = $dcg[$iPos - 1] + ($hsNdcgRelScore{$r} * log(2.0) / log($iPos + 1.0));
         }
     }
     return @dcg;
@@ -275,7 +327,6 @@ sub NDCG
     {
         $ndcg[$iPos] = 0;
         $ndcg[$iPos] = $dcg[$iPos] / $bestDcg[$iPos] if ($bestDcg[$iPos] != 0);
-        #$ndcg[$iPos] = sprintf("%.4f", $ndcg[$iPos]);
     }
     return @ndcg;
 }
