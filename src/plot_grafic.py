@@ -138,18 +138,20 @@ def plot_graph(position:int, dataset:str, itens:dict):
     for a in ['rank_ndcg_xgboost', 'rank_xendcg_lgbm', 'lambdarank_lgbm', 'regression_xgboost', 'regression_lgbm']:
         iteration = [x for x in range(0, len(itens[a][f'NDCG@{position}']))]
         ax.plot(iteration, itens[a][f'NDCG@{position}'], label=a)
-    ax.set_yticks(np.arange(0, 1.1, 0.1))
+    #ax.set_yticks(np.arange(0, 1.1, 0.1))
+    ax.set_yticks(np.arange(0.15, 0.65, 0.05))
     ax.set(xlabel='Iterações', ylabel=f'nDCG@{position}',
         title=f'nDCG@{position} obtido durante o treinamento do {dataset}')
     ax.grid()
     ax.legend()
 
-    fig.savefig(f"nDCG{position}_{dataset}.png", dpi=1920, orientation='portrait')
+    fig.savefig(f"images/stript_nDCG{position}_{dataset}.png", dpi=1920, orientation='portrait')
     #plt.show()
 def build_line_train_chart():
     data = read_json()
     for dataset in ['MSLR10K', 'MSLR30K', 'OHSUMED', 'TD2003', 'TD2004']:
-        for position in [1,3,5,10]:
+        #1,3,5,
+        for position in [10]:
             plot_graph(position, dataset, data[dataset])
             
 def main():
