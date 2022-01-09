@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 from matplotlib.font_manager import FontProperties
-import json
+from tools import read_json
 #from matplotlib import colors
 
 
@@ -128,11 +128,6 @@ def build_dataset_scatter():
     plt.savefig('dataset_ano.png', dpi=1920, orientation='portrait')
     plt.show()
 
-def read_json():
-    with open('train.recover.json') as json_file:
-        data = json.load(json_file)
-    return data
-
 def plot_graph(position:int, dataset:str, itens:dict):
     fig, ax = plt.subplots()
     for a in ['rank_ndcg_xgboost', 'rank_xendcg_lgbm', 'lambdarank_lgbm', 'regression_xgboost', 'regression_lgbm']:
@@ -148,7 +143,7 @@ def plot_graph(position:int, dataset:str, itens:dict):
     fig.savefig(f"images/stript_nDCG{position}_{dataset}.png", dpi=1920, orientation='portrait')
     #plt.show()
 def build_line_train_chart():
-    data = read_json()
+    data = read_json('train.recover.json')
     for dataset in ['MSLR10K', 'MSLR30K', 'OHSUMED', 'TD2003', 'TD2004']:
         #1,3,5,
         for position in [10]:
