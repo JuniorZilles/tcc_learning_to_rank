@@ -1,5 +1,5 @@
 {
-    "MSLR10K": {
+    "MSLR-WEB10K": {
         "lambdarank_lgbm": {
             "NDCG@1": [
                 0.355719,
@@ -10051,7 +10051,7 @@
             ]
         }
     },
-    "MSLR30K": {
+    "MSLR-WEB30K": {
         "lambdarank_lgbm": {
             "NDCG@1": [
                 0.375615,
