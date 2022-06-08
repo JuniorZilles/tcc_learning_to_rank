@@ -27,10 +27,12 @@ def build_scatter():
                 
     cmap = plt.cm.viridis
     
+    plt.rcParams['font.size'] = 18
     plt.scatter(x, y, c=z, cmap=cmap,  s=100)
-    plt.colorbar(ticks=np.linspace(1, 5, 5), label='Quantity')
-    plt.xlabel('Year')
-    plt.ylabel('Algorithm/Model')
+    cbar = plt.colorbar(ticks=np.linspace(1, 5, 5), label='Quantity')
+    cbar.ax.tick_params(labelsize=16)
+    plt.xlabel('Year',  fontsize=18)
+    plt.ylabel('Algorithm/Model',  fontsize=18)
     x.append(2018)
     plt.xticks(x)
     plt.title("Quantity X Algorithm/Model X Year")
@@ -74,13 +76,14 @@ def readbuild_histogram():
     items_g4.sort(reverse=True, key=lambda x: x[1])
 
     fontP = FontProperties()
-    fontP.set_size('x-small')
+    fontP.set_size('small')
 
     i= 0
     for y in items_g4:
         plt.bar(y[0], y[1], label=y[0],color=colors[i])
         plt.xticks(y[0], " ")
         i+=1
+    plt.rcParams['font.size'] = 18
     plt.ylabel("Quantity")
     plt.title("Quantity of studies X Algorithms/Models")
     plt.grid(True, axis='y')
@@ -114,10 +117,12 @@ def build_dataset_scatter():
                 
     cmap = plt.cm.viridis
     
+    plt.rcParams['font.size'] = 18
     plt.scatter(x, y, c=z, cmap=cmap,  s=100)
-    plt.colorbar(ticks=np.linspace(1, 3, 3), label='Quantity')
-    plt.xlabel('Year')
-    plt.ylabel('Dataset')
+    cbar = plt.colorbar(ticks=np.linspace(1, 3, 3), label='Quantity')
+    cbar.ax.tick_params(labelsize=16)
+    plt.xlabel('Year',  fontsize=18)
+    plt.ylabel('Dataset', fontsize=18)
     x.append(2014)
     x.append(2015)
     x.append(2017)
@@ -135,12 +140,12 @@ def plot_graph(position:int, dataset:str, itens:dict):
         ax.plot(iteration, itens[a[0]][f'NDCG@{position}'], label=a[1])
     #ax.set_yticks(np.arange(0, 1.1, 0.1))
     ax.set_yticks(np.arange(0.15, 0.65, 0.05))
-    ax.set(xlabel='Iterações', ylabel=f'nDCG@{position}',
-        title=f'nDCG@{position} obtido durante o treinamento do {dataset}')
+    ax.set(xlabel='Iteration', ylabel=f'nDCG@{position}',
+        title=f'nDCG@{position} achieved in training with {dataset}')
     ax.grid()
     ax.legend()
 
-    fig.savefig(f"images/stript_nDCG{position}_{dataset}.png", dpi=1920, orientation='portrait')
+    fig.savefig(f"images/stript_nDCG{position}_{dataset}_i.png", dpi=1920, orientation='portrait')
     #plt.show()
 def build_line_train_chart():
     data = read_json('train.recover.json')

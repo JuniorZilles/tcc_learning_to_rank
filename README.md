@@ -76,8 +76,11 @@ Add notes about how to use the system.
 
 ## train SVM
 
-svm_rank_learn -c 3 data/MSLR30K/train.dat models/rankSVM.MSLR30K.model 1> train_logs/train.rankSVM.MSLR30K.log 2>&1 
+svm_rank_learn -c 1 data/OHSUMED/train.txt models/rankSVM.OHSUMED.model 1> train_logs/train.rankSVM.OHSUMED.log 2>&1 
 
+## classify test set
+
+svm_rank_classify data/OHSUMED/test.txt models/rankSVM.OHSUMED.model predicted/rankSVM.OHSUMED.txt
 ## evaluate datasets from letor 4.0
 
 perl Eval-Score-4.0.pl data/TD2004/test.txt predicted/xgboost.regression.td2004.txt evaluation_letor\xgboost.regression.td2004.txt 0
